@@ -17,10 +17,10 @@ pipeline {
         stage('制品') {
             steps {
                 // cd /var/jenkins_home/workspace/nextjs-dashboard/.next/
-                dir('.next') {
+                dir('.next/standalone') {
                     sh 'pwd'
                     sh 'ls -al'
-                    sh 'tar -zcvf dash.tar.gz standalone'
+                    sh 'tar -zcvf dash.tar.gz *'
                     archiveArtifacts artifacts: 'dash.tar.gz',
                                                 allowEmptyArchive: true,
                                                 fingerprint: true,
@@ -36,6 +36,7 @@ pipeline {
                     sh 'ls -al'
                     writeFile file: 'Dockerfile',
                                            text: '''FROM node
+WORKDIR /app
 ADD dash.tar.gz .
 EXPOSE 3000
 CMD ["node", "server.js"]
