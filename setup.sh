@@ -1,4 +1,4 @@
-POSTGRES_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <pg_container_name_or_id>)
+POSTGRES_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' my-pg)
 sed -i "s/\${POSTGRES_HOST}/$POSTGRES_IP/" .env.prod
 
 
