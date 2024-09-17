@@ -7,7 +7,7 @@ pipeline {
             steps {
                 sh 'chmod +x setup.sh'
                 sh './setup.sh'
-                withDockerContainer('node', args: '-e NODE_ENV=production') {
+                withDockerContainer(image: 'node', args: '-e NODE_ENV=production') {
                     sh 'npm install --registry https://registry.npmmirror.com'
                     sh 'npm run build'
                 }
