@@ -17,7 +17,7 @@ pipeline {
         stage('制品') {
             steps {
                 // cd /var/jenkins_home/workspace/nextjs-dashboard/.next/
-                dir('.next/standalone') {
+                dir('.next') {
                     sh 'pwd'
                     sh 'ls -al'
                     sh 'tar -zcvf dash.tar.gz -C standalone/* .'
