@@ -20,7 +20,7 @@ pipeline {
                 dir('.next/standalone') {
                     sh 'pwd'
                     sh 'ls -al'
-                    sh 'tar -zcvf dash.tar.gz *'
+                    sh 'tar -zcvf dash.tar.gz -C standalone/* .'
                     archiveArtifacts artifacts: 'dash.tar.gz',
                                                 allowEmptyArchive: true,
                                                 fingerprint: true,
@@ -36,7 +36,6 @@ pipeline {
                     sh 'ls -al'
                     writeFile file: 'Dockerfile',
                                            text: '''FROM node
-WORKDIR /app
 ADD dash.tar.gz .
 EXPOSE 3000
 CMD ["node", "server.js"]
