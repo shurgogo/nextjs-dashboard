@@ -1,7 +1,6 @@
+# 跟 jenkins 冲突，好处是方便，坏处是生成的docker镜像中有多余文件
 # 使用官方Node.js镜像作为基础镜像
 # FROM node AS base
-
-
 
 # # 安装/下载 依赖
 # FROM base AS deps
@@ -34,12 +33,13 @@
 # RUN adduser --system --uid 1001 nextjs
 # # builder 层 /app/public 放的是项目代码中自带的 public
 # COPY --from=builder /app/public ./public
+# COPY --from=builder /app/.env.production ./
 
 # RUN mkdir .next
 # RUN chown nextjs:nodejs .next
 # # builder 层的 /app/.next 是 `npm run build` 生成的内容
 # COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-# COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# COPY --from=builder --chown=nextjs:nodejs /app/.next/* ./.next/
 
 # USER nextjs
 

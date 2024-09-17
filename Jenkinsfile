@@ -2,11 +2,21 @@ pipeline {
     agent any    //表示使用 jenkins 集群中的任意一个
 
     stages {
-        // build .next
-        stage('构建') {
+        stage('准备环境') {
             steps {
+                // 注入环境变量到 .env.production
                 sh 'chmod +x setup.sh'
                 sh './setup.sh'
+
+                // 因为 jenkins 容器绑定了本地存储，需要清理上次流水线遗留内容
+                // 否则类似于 mkdir 的命令会报错（重复创建文件夹）
+                sh 'chmod +x clean.sh'
+                sh './clean.sh'
+            }
+        }
+        // 添加 node_module
+        stage('构建APP') {
+            steps {
                 withDockerContainer(image: 'node', args: '-e NODE_ENV=production') {
                     sh 'npm install --registry https://registry.npmmirror.com'
                     sh 'npm run build'
@@ -14,10 +24,8 @@ pipeline {
             }
         }
 
-        stage('制品') {
+        stage('生成制品') {
             steps {
-                sh 'rm -rf tmp'
-                sh 'rm -rf dash.tar.gz'
                 sh 'mkdir tmp'
                 // cd /var/jenkins_home/workspace/nextjs-dashboard/tmp/
                 dir('tmp') {
@@ -32,22 +40,11 @@ pipeline {
                                                 allowEmptyArchive: true,
                                                 fingerprint: true,
                                                 onlyIfSuccessful: true
-            // dir('.next') {
-            //     sh 'pwd'
-            //     sh 'cp -r ../public ./public'
-            //     sh 'tar -zcvf dash.tar.gz -C ./standalone .'
-            //     archiveArtifacts artifacts: 'dash.tar.gz',
-            //                                 allowEmptyArchive: true,
-            //                                 fingerprint: true,
-            //                                 onlyIfSuccessful: true
-            // }
             }
         }
 
         stage('部署') {
             steps {
-                sh 'pwd'
-                sh 'ls -al'
                 writeFile file: 'Dockerfile',
                                         text: '''FROM node
 WORKDIR /app
@@ -55,11 +52,9 @@ ADD dash.tar.gz /app
 EXPOSE 3000
 CMD ["node", "server.js"]
 '''
-                sh 'cat Dockerfile'
                 sh 'docker build -f Dockerfile -t dash-app:v1 .'
                 sh 'docker rm -f dash-app'
                 sh 'docker run -d -p 3000:3000 --name dash-app dash-app:v1'
-                
             }
         }
     }
