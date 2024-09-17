@@ -22,14 +22,11 @@ pipeline {
                 // cd /var/jenkins_home/workspace/nextjs-dashboard/tmp/
                 dir('tmp') {
                     sh 'mkdir .next'
+                    sh 'cp ../.env.production .'
                     sh 'cp -r ../public ./public'
-                    sh 'mv ../.next/standalone/* .'
                     sh 'cp -r ../.next/* ./.next/'
-                    echo 'pwd'
-                    sh 'ls -al'
+                    sh 'mv ./.next/standalone/* .'
                 }
-                sh 'pwd'
-                sh 'ls -al'
                 sh 'tar -zcvf dash.tar.gz -C ./tmp .'
                 archiveArtifacts artifacts: 'dash.tar.gz',
                                                 allowEmptyArchive: true,
