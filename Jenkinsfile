@@ -20,7 +20,7 @@ pipeline {
                 dir('.next') {
                     sh 'pwd'
                     sh 'ls -al'
-                    sh 'tar -zcvf dash.tar.gz -C standalone/* .'
+                    sh 'tar -zcvf dash.tar.gz -C ./standalone .'
                     archiveArtifacts artifacts: 'dash.tar.gz',
                                                 allowEmptyArchive: true,
                                                 fingerprint: true,
