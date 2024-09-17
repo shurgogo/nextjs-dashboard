@@ -21,8 +21,8 @@ pipeline {
                 dir('tmp') {
                     sh 'mkdir .next'
                     sh 'cp -r ../public ./public'
-                    sh 'cp -r ../.next/standalone/* .'
-                    sh 'cp -r ../.next/static ./.next/static'
+                    sh 'mv ../.next/standalone/* .'
+                    sh 'cp -r ../.next/* ./.next/*'
                     echo 'pwd'
                     sh 'ls -al'
                 }
