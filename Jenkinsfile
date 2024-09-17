@@ -36,7 +36,7 @@ pipeline {
                     sh 'ls -al'
                     writeFile file: 'Dockerfile',
                                            text: '''FROM node
-ADD dash.tar.gz
+ADD dash.tar.gz .
 EXPOSE 3000
 CMD ["node", "server.js"]
 '''
