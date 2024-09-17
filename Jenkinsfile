@@ -16,6 +16,8 @@ pipeline {
 
         stage('制品') {
             steps {
+                sh 'rm -rf tmp'
+                sh 'rm -rf dash.tar.gz'
                 sh 'mkdir tmp'
                 // cd /var/jenkins_home/workspace/nextjs-dashboard/tmp/
                 dir('tmp') {
