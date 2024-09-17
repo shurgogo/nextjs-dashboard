@@ -24,7 +24,7 @@ pipeline {
                     sh 'mkdir .next'
                     sh 'cp -r ../public ./public'
                     sh 'mv ../.next/standalone/* .'
-                    sh 'cp -r ../.next/* ./.next/*'
+                    sh 'cp -r ../.next/* ./.next/'
                     echo 'pwd'
                     sh 'ls -al'
                 }
