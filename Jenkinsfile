@@ -2,47 +2,50 @@ pipeline {
     agent any    //表示使用 jenkins 集群中的任意一个
 
     stages {
+        // build .next
         stage('构建') {
             steps {
+                sh 'chmod +x setup.sh'
+                sh './setup.sh'
                 withDockerContainer('node', args: '-e NODE_ENV=production') {
-                    // some block
-                    sh 'node -v'
-                    sh 'npm config set registry https://registry.npmmirror.com'
-                    sh 'npm install'
-                    sh 'npm run next:build'
+                    sh 'npm install --registry https://registry.npmmirror.com'
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('制品'){
-         steps {
-            // cd /var/jenkins_home/workspace/nextjs-dashboard/.vitepress/dist
-             dir('.vitepress/dist') {
-                 // some block
-                 sh 'ls -al'
-                 sh 'tar -zcvf docs.tar.gz *'
-                 archiveArtifacts artifacts: 'docs.tar.gz',
+        stage('制品') {
+            steps {
+                // cd /var/jenkins_home/workspace/nextjs-dashboard/.next/
+                dir('.next') {
+                    sh 'pwd'
+                    sh 'ls -al'
+                    sh 'tar -zcvf dash.tar.gz standalone'
+                    archiveArtifacts artifacts: 'dash.tar.gz',
                                                 allowEmptyArchive: true,
                                                 fingerprint: true,
                                                 onlyIfSuccessful: true
-                 sh 'ls -al'
-             }
-         }
+                }
+            }
         }
 
-        stage('部署'){
-             steps {
-                 dir('.vitepress/dist') {
-                                 sh 'ls -al'
-                                 writeFile file: 'Dockerfile',
-                                           text: '''FROM nginx
-ADD docs.tar.gz /usr/share/nginx/html/'''
-                                 sh 'cat Dockerfile'
-                                 sh 'docker build -f Dockerfile -t docs-app:latest .'
-                                 sh 'docker rm -f app'
-                                 sh 'docker run -d -p 80:80 --name app docs-app:latest'
-                 }
-             }
+        stage('部署') {
+            steps {
+                dir('.next') {
+                    sh 'pwd'
+                    sh 'ls -al'
+                    writeFile file: 'Dockerfile',
+                                           text: '''FROM node
+ADD dash.tar.gz
+EXPOSE 3000
+CMD ["node", "server.js"]
+'''
+                    sh 'cat Dockerfile'
+                    sh 'docker build -f Dockerfile -t dash-app:v1 .'
+                    sh 'docker rm -f dash-app'
+                    sh 'docker run -d -p 3000:3000 --name dash-app dash-app:v1'
+                }
+            }
         }
     }
 }
