@@ -197,6 +197,25 @@ export async function fetchCustomers() {
   }
 }
 
+export async function namfetchCustomerById(id: string) {
+  try {
+    const data = await connectionPool.query(`
+      SELECT
+        id,
+        name
+      FROM customers
+      where id = '${id}'
+    `);
+
+    if (data.rows) {
+      return data.rows[0];
+    }
+  } catch (err) {
+    console.error("Database Error:", err);
+    throw new Error("Failed to fetch customer by id.");
+  }
+}
+
 export async function fetchFilteredCustomers(query: string) {
   try {
     const data = await connectionPool.query(`
