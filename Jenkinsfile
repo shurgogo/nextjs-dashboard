@@ -18,7 +18,8 @@ pipeline {
         stage('构建APP') {
             steps {
                 withDockerContainer(image: 'node', args: '-e NODE_ENV=production') {
-                    sh 'npm install --registry https://registry.npmmirror.com'
+                    sh 'npm cache clean --force'
+                    sh 'npm i --registry https://registry.npmmirror.com --force'
                     sh 'npm run build'
                 }
             }
