@@ -7,6 +7,7 @@ import {
   LatestInvoicesSkeleton,
   RevenueChartSkeleton,
 } from "@/app/ui/skeletons";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
 export default async function Page() {
@@ -31,3 +32,7 @@ export default async function Page() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
